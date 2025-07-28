@@ -1,6 +1,7 @@
 package com.example.atividade_17062025_geolocalizacao.view;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.view.View;
@@ -29,12 +30,14 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 public class MapaActivity extends AppCompatActivity implements OnMapReadyCallback {
 
     private final LocalRepository localRepository = LocalRepository.getInstance();
     private static final int REQUEST_CODE_PERMISSOES = 1001;
     private LifecycleCameraController cameraController;
+    private FloatingActionButton fabListaLocais;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,6 +49,14 @@ public class MapaActivity extends AppCompatActivity implements OnMapReadyCallbac
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+
+        fabListaLocais = findViewById(R.id.fabListaLocais);
+
+        fabListaLocais.setOnClickListener(v -> {
+            Intent intent = new Intent(MapaActivity.this, ListaLocaisActivity.class);
+            startActivity(intent);
+        });
+
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.maps);
         mapFragment.getMapAsync(this);
         verificaPermissoes();

@@ -29,6 +29,15 @@ public class LocalRepository {
         return new ArrayList<>(locaisList);
     }
 
+    public Local getLocalByLatLng(double latitude, double longitude) {
+        for (Local local : locaisList) {
+            if (local.getLatitude() == latitude && local.getLongitude() == longitude) {
+                return local;
+            }
+        }
+        return null;
+    }
+
     public void limpar() {
         locaisList.clear();
     }

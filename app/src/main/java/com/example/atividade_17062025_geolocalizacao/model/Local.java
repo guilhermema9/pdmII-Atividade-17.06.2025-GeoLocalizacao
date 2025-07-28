@@ -1,11 +1,15 @@
 package com.example.atividade_17062025_geolocalizacao.model;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Local {
 
     private String nome;
     private String descricao;
     private double latitude;
     private double longitude;
+    private List<String> listaFotos;
 
     public Local(double latitude, double longitude) {
         this.latitude = latitude;
@@ -17,6 +21,7 @@ public class Local {
         this.descricao = descricao;
         this.latitude = latitude;
         this.longitude = longitude;
+        this.listaFotos = new ArrayList<>();
     }
 
     public String getNome() {
@@ -49,5 +54,16 @@ public class Local {
 
     public void setLongitude(double longitude) {
         this.longitude = longitude;
+    }
+
+    public List<String> getPhotoPaths() {
+        return listaFotos;
+    }
+
+    public void addPhotoPath(String listaFotos) {
+        if (this.listaFotos == null) {
+            this.listaFotos = new ArrayList<>();
+        }
+        this.listaFotos.add(listaFotos);
     }
 }

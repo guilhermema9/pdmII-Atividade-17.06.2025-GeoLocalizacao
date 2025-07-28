@@ -2,6 +2,7 @@ package com.example.atividade_17062025_geolocalizacao.view;
 
 import static androidx.core.content.ContextCompat.getMainExecutor;
 
+import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -52,6 +53,7 @@ public class CameraFragment extends Fragment {
 
         previewView = view.findViewById(R.id.preview_view);
         btnTirarFoto = view.findViewById(R.id.button_tirar_foto);
+        btnVoltar = view.findViewById(R.id.button_voltar);
 
         if (getArguments() != null) {
             nome = getArguments().getString("nome");
@@ -89,10 +91,19 @@ public class CameraFragment extends Fragment {
         ImageCapture.OnImageSavedCallback onImageSavedCallback = new ImageCapture.OnImageSavedCallback() {
             @Override
             public void onImageSaved(@NonNull ImageCapture.OutputFileResults outputFileResults) {
-                //Local local = new Local(nome, descricao, latLng.latitude, latLng.longitude, file.getAbsolutePath());
-                //LocalRepository.getInstance().adicionarLocal(local);
-                Toast.makeText(getContext(), "Foto Salva em: " + outputFileResults.getSavedUri(), Toast.LENGTH_LONG).show();
-                //requireActivity().getSupportFragmentManager().popBackStack();
+                // Busca o local recém-criado no repositório usando as coordenadas.
+                Local local = LocalRepository.getInstance().getLocalByLatLng(latLng.latitude, latLng.longitude);
+                if (local != null) {
+                    Uri savedUri = outputFileResults.getSavedUri();
+                    if (savedUri != null) {
+                        // Adiciona o caminho absoluto da foto salva ao objeto Local.
+                        local.addPhotoPath(arquivo.getAbsolutePath());
+                        String msg = "Foto salva e associada ao local: " + local.getNome();
+                        Toast.makeText(getContext(), msg, Toast.LENGTH_LONG).show();
+                    }
+                } else {
+                    Toast.makeText(getContext(), "Erro: Não foi possível encontrar o local para associar a foto.", Toast.LENGTH_LONG).show();
+                }
             }
 
             @Override
