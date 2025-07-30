@@ -20,10 +20,12 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.example.atividade_17062025_geolocalizacao.R;
 import com.example.atividade_17062025_geolocalizacao.model.Local;
 import com.example.atividade_17062025_geolocalizacao.repository.LocalRepository;
+import com.example.atividade_17062025_geolocalizacao.viewmodel.MapaViewModel;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -34,6 +36,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 public class MapaActivity extends AppCompatActivity implements OnMapReadyCallback {
 
+    private MapaViewModel mapaViewModel;
     private final LocalRepository localRepository = LocalRepository.getInstance();
     private static final int REQUEST_CODE_PERMISSOES = 1001;
     private LifecycleCameraController cameraController;
@@ -49,6 +52,8 @@ public class MapaActivity extends AppCompatActivity implements OnMapReadyCallbac
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+
+        mapaViewModel = new ViewModelProvider(this).get(MapaViewModel.class);
 
         fabListaLocais = findViewById(R.id.fabListaLocais);
 
@@ -85,8 +90,7 @@ public class MapaActivity extends AppCompatActivity implements OnMapReadyCallbac
                         String descricao = editDescricao.getText().toString().trim();
 
                         if (!nome.isEmpty()) {
-                            Local local = new Local(nome, descricao, latLng.latitude, latLng.longitude);
-                            LocalRepository.getInstance().adicionarLocal(local);
+                            mapaViewModel.adicionarLocal(nome, descricao, latLng.latitude, latLng.longitude);
 
                             googleMap.addMarker(new MarkerOptions()
                                     .position(latLng)
@@ -106,8 +110,8 @@ public class MapaActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     private void abrirFragmentCamera(String nome, String descricao, LatLng latLng) {
         Bundle bundle = new Bundle();
-        bundle.putString("nome", nome);
-        bundle.putString("descricao", descricao);
+        /*bundle.putString("nome", nome);
+        bundle.putString("descricao", descricao);*/
         bundle.putDouble("lat", latLng.latitude);
         bundle.putDouble("lng", latLng.longitude);
 
