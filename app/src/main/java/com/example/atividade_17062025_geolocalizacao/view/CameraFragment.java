@@ -40,11 +40,9 @@ public class CameraFragment extends Fragment {
     private PreviewView previewView;
     private ImageCapture imageCapture;
     private Button btnTirarFoto;
-    private String nome, descricao;
     private LatLng latLng;
     private ImageButton btnVoltar;
     private LifecycleCameraController cameraController;
-
 
     @Nullable
     @Override
@@ -56,8 +54,6 @@ public class CameraFragment extends Fragment {
         btnVoltar = view.findViewById(R.id.button_voltar);
 
         if (getArguments() != null) {
-            nome = getArguments().getString("nome");
-            descricao = getArguments().getString("descricao");
             double lat = getArguments().getDouble("lat");
             double lng = getArguments().getDouble("lng");
             latLng = new LatLng(lat, lng);
@@ -76,7 +72,6 @@ public class CameraFragment extends Fragment {
     }
 
     private void startCamera() {
-        //PreviewView previewView = findViewById(R.id.preview_view);
         cameraController = new LifecycleCameraController(getContext());
         cameraController.bindToLifecycle(this);
         cameraController.setCameraSelector(CameraSelector.DEFAULT_BACK_CAMERA);
@@ -91,12 +86,10 @@ public class CameraFragment extends Fragment {
         ImageCapture.OnImageSavedCallback onImageSavedCallback = new ImageCapture.OnImageSavedCallback() {
             @Override
             public void onImageSaved(@NonNull ImageCapture.OutputFileResults outputFileResults) {
-                // Busca o local recém-criado no repositório usando as coordenadas.
                 Local local = LocalRepository.getInstance().getLocalByLatLng(latLng.latitude, latLng.longitude);
                 if (local != null) {
                     Uri savedUri = outputFileResults.getSavedUri();
                     if (savedUri != null) {
-                        // Adiciona o caminho absoluto da foto salva ao objeto Local.
                         local.addPhotoPath(arquivo.getAbsolutePath());
                         String msg = "Foto salva e associada ao local: " + local.getNome();
                         Toast.makeText(getContext(), msg, Toast.LENGTH_LONG).show();

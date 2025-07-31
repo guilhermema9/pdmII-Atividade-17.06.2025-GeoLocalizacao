@@ -23,7 +23,6 @@ public class LocalAdapter extends RecyclerView.Adapter<LocalAdapter.LocalViewHol
     private final Context context;
     private OnItemClickListener listener;
 
-    // Interface para o evento de clique em um item da lista
     public interface OnItemClickListener {
         void onItemClick(Local local);
     }
@@ -40,7 +39,6 @@ public class LocalAdapter extends RecyclerView.Adapter<LocalAdapter.LocalViewHol
     @NonNull
     @Override
     public LocalViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        // Infla o layout do item da lista (item_local.xml)
         View view = LayoutInflater.from(context).inflate(R.layout.item_local, parent, false);
         return new LocalViewHolder(view);
     }
@@ -49,28 +47,22 @@ public class LocalAdapter extends RecyclerView.Adapter<LocalAdapter.LocalViewHol
     public void onBindViewHolder(@NonNull LocalViewHolder holder, int position) {
         Local local = locais.get(position);
 
-        // Define o nome e a descrição do local nos TextViews
         holder.textNome.setText(local.getNome());
         holder.textDescricao.setText(local.getDescricao());
 
-        // Carrega a primeira foto do local como thumbnail
         if (local.getPhotoPaths() != null && !local.getPhotoPaths().isEmpty()) {
             String firstPhotoPath = local.getPhotoPaths().get(0);
             File imgFile = new File(firstPhotoPath);
 
             if (imgFile.exists()) {
-                // Se o arquivo de imagem existe, carrega-o no ImageView
                 holder.imageThumb.setImageURI(Uri.fromFile(imgFile));
             } else {
-                // Caso contrário, usa uma imagem padrão
                 holder.imageThumb.setImageResource(R.drawable.photo);
             }
         } else {
-            // Se não houver fotos, usa a imagem padrão
             holder.imageThumb.setImageResource(R.drawable.photo);
         }
 
-        // Configura o evento de clique para o item
         holder.itemView.setOnClickListener(v -> {
             if (listener != null) {
                 listener.onItemClick(local);
@@ -83,9 +75,6 @@ public class LocalAdapter extends RecyclerView.Adapter<LocalAdapter.LocalViewHol
         return locais.size();
     }
 
-    /**
-     * ViewHolder que armazena as referências para as views de cada item da lista.
-     */
     public static class LocalViewHolder extends RecyclerView.ViewHolder {
         ImageView imageThumb;
         TextView textNome;

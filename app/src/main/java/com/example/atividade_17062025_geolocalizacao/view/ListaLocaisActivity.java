@@ -40,62 +40,24 @@ public class ListaLocaisActivity extends AppCompatActivity {
 
         listaLocaisViewModel = new ViewModelProvider(this).get(ListaLocaisViewModel.class);
 
-        // Inicializa o RecyclerView
         recyclerViewLocais = findViewById(R.id.recyclerLocais);
         recyclerViewLocais.setLayoutManager(new LinearLayoutManager(this));
 
-        // Busca a lista de locais do repositório
-        //List<Local> locais = LocalRepository.getInstance().getTodosOsLocais();
-
-        // Cria e configura o adapter
-        //localAdapter = new LocalAdapter(locais, this);
         listaLocaisViewModel.getLocais().observe(this, locais ->{
             localAdapter = new LocalAdapter(locais, this);
             localAdapter.setOnItemClickListener(local -> {
-                // Cria uma Intent para abrir a DetalhesLocalActivity
                 Intent intent = new Intent(ListaLocaisActivity.this, DetalhesLocalActivity.class);
-                // Passa a latitude e longitude como "extras" para a próxima atividade
                 intent.putExtra("local_lat", local.getLatitude());
                 intent.putExtra("local_lon", local.getLongitude());
                 startActivity(intent);
             });
             recyclerViewLocais.setAdapter(localAdapter);
         });
-
-        /*localAdapter.setOnItemClickListener(local -> {
-            // Cria uma Intent para abrir a DetalhesLocalActivity
-            Intent intent = new Intent(ListaLocaisActivity.this, DetalhesLocalActivity.class);
-            // Passa a latitude e longitude como "extras" para a próxima atividade
-            intent.putExtra("local_lat", local.getLatitude());
-            intent.putExtra("local_lon", local.getLongitude());
-            startActivity(intent);
-        });*/
     }
 
     @Override
     protected void onResume() {
         super.onResume();
         listaLocaisViewModel.carregarLocais();
-
-        /*
-        // --- TAREFAS DE ATUALIZAÇÃO ---
-        // Sempre que a tela se torna visível, busca a lista mais recente de locais.
-        List<Local> locaisAtualizados = LocalRepository.getInstance().getTodosOsLocais();
-
-        // Cria um novo adapter com os dados frescos.
-        localAdapter = new LocalAdapter(locaisAtualizados, this);
-
-        // Define o listener de clique para o novo adapter.
-        localAdapter.setOnItemClickListener(local -> {
-            // Cria uma Intent para abrir a DetalhesLocalActivity
-            Intent intent = new Intent(ListaLocaisActivity.this, DetalhesLocalActivity.class);
-            // Passa a latitude e longitude como "extras" para a próxima atividade
-            intent.putExtra("local_lat", local.getLatitude());
-            intent.putExtra("local_lon", local.getLongitude());
-            startActivity(intent);
-        });
-
-        // Conecta o novo adapter ao RecyclerView para exibir a lista atualizada.
-        recyclerViewLocais.setAdapter(localAdapter);*/
     }
 }

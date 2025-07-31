@@ -39,7 +39,6 @@ public class FotoAdapter extends RecyclerView.Adapter<FotoAdapter.FotoViewHolder
         File imgFile = new File(photoPath);
 
         if (imgFile.exists()) {
-            // Carrega o arquivo de imagem no ImageView
             holder.imageView.setImageURI(Uri.fromFile(imgFile));
         }
     }
@@ -49,9 +48,6 @@ public class FotoAdapter extends RecyclerView.Adapter<FotoAdapter.FotoViewHolder
         return photoPaths.size();
     }
 
-    /**
-     * ViewHolder que armazena a referência para o ImageView de cada foto.
-     */
     public static class FotoViewHolder extends RecyclerView.ViewHolder {
         ImageView imageView;
 

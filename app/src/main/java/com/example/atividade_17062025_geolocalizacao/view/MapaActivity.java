@@ -10,6 +10,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -26,6 +28,8 @@ import com.example.atividade_17062025_geolocalizacao.R;
 import com.example.atividade_17062025_geolocalizacao.model.Local;
 import com.example.atividade_17062025_geolocalizacao.repository.LocalRepository;
 import com.example.atividade_17062025_geolocalizacao.viewmodel.MapaViewModel;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -37,10 +41,11 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 public class MapaActivity extends AppCompatActivity implements OnMapReadyCallback {
 
     private MapaViewModel mapaViewModel;
-    private final LocalRepository localRepository = LocalRepository.getInstance();
-    private static final int REQUEST_CODE_PERMISSOES = 1001;
-    private LifecycleCameraController cameraController;
     private FloatingActionButton fabListaLocais;
+    private LatLng latLngLocal;
+    private ActivityResultLauncher<String> locationPermissionLauncher;
+    private ActivityResultLauncher<String> cameraPermissionLauncher;
+    private GoogleMap mGoogleMap;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,27 +57,47 @@ public class MapaActivity extends AppCompatActivity implements OnMapReadyCallbac
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
-
         mapaViewModel = new ViewModelProvider(this).get(MapaViewModel.class);
-
         fabListaLocais = findViewById(R.id.fabListaLocais);
-
         fabListaLocais.setOnClickListener(v -> {
             Intent intent = new Intent(MapaActivity.this, ListaLocaisActivity.class);
             startActivity(intent);
         });
 
+        locationPermissionLauncher = registerForActivityResult(
+                new ActivityResultContracts.RequestPermission(),
+                isGranted -> {
+                    if (isGranted && mGoogleMap != null) {
+                        verificaPermissaoLocaizacao();
+                    } else {
+                        Toast.makeText(this, "Permissão de localização negada.", Toast.LENGTH_SHORT).show();
+                    }
+                }
+        );
+
+        cameraPermissionLauncher = registerForActivityResult(
+                new ActivityResultContracts.RequestPermission(),
+                isGranted -> {
+                    if (isGranted && mGoogleMap != null) {
+                        habilitarLocalizacao();
+                    } else {
+                        Toast.makeText(this, "Permissão de localização negada.", Toast.LENGTH_SHORT).show();
+                    }
+                }
+        );
+
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.maps);
         mapFragment.getMapAsync(this);
-        verificaPermissoes();
     }
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
-        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(-
+        mGoogleMap = googleMap;
+        verificaPermissaoLocaizacao();
+        mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(-
                 10.184300433266566, -48.33377376019333),12));
 
-        googleMap.setOnMapClickListener(latLng -> {
+        mGoogleMap.setOnMapClickListener(latLng -> {
             View dialogView = getLayoutInflater().inflate(R.layout.dialog_save_local, null);
 
             EditText editNome = dialogView.findViewById(R.id.editNome);
@@ -92,13 +117,14 @@ public class MapaActivity extends AppCompatActivity implements OnMapReadyCallbac
                         if (!nome.isEmpty()) {
                             mapaViewModel.adicionarLocal(nome, descricao, latLng.latitude, latLng.longitude);
 
-                            googleMap.addMarker(new MarkerOptions()
+                            mGoogleMap.addMarker(new MarkerOptions()
                                     .position(latLng)
                                     .title(nome)
                                     .snippet(descricao));
 
+                            this.latLngLocal = latLng;
                             dialog.dismiss();
-                            abrirFragmentCamera(nome, descricao, latLng);
+                            verificaPermissaoCamera();
                         } else {
                             Toast.makeText(this, "Digite um nome para o local.", Toast.LENGTH_SHORT).show();
                         }
@@ -108,12 +134,10 @@ public class MapaActivity extends AppCompatActivity implements OnMapReadyCallbac
         });
     }
 
-    private void abrirFragmentCamera(String nome, String descricao, LatLng latLng) {
+    private void abrirFragmentCamera() {
         Bundle bundle = new Bundle();
-        /*bundle.putString("nome", nome);
-        bundle.putString("descricao", descricao);*/
-        bundle.putDouble("lat", latLng.latitude);
-        bundle.putDouble("lng", latLng.longitude);
+        bundle.putDouble("lat", latLngLocal.latitude);
+        bundle.putDouble("lng", latLngLocal.longitude);
 
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         CameraFragment fragment = new CameraFragment();
@@ -123,20 +147,25 @@ public class MapaActivity extends AppCompatActivity implements OnMapReadyCallbac
         transaction.commit();
     }
 
-    private void verificaPermissoes() {
-        requestPermissions(new String[] { Manifest.permission.CAMERA },1);
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, REQUEST_CODE_PERMISSOES);
+    private void verificaPermissaoCamera() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
+            abrirFragmentCamera();
+        } else {
+            cameraPermissionLauncher.launch(Manifest.permission.CAMERA);
         }
     }
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == REQUEST_CODE_PERMISSOES && grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            Toast.makeText(this, "Permissão da câmera concedida", Toast.LENGTH_SHORT).show();
+    private void verificaPermissaoLocaizacao(){
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            mGoogleMap.setMyLocationEnabled(true);
         } else {
-            Toast.makeText(this, "Permissão da câmera negada", Toast.LENGTH_SHORT).show();
+            locationPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION);
+        }
+    }
+
+    private void habilitarLocalizacao() {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            mGoogleMap.setMyLocationEnabled(true);
         }
     }
 }
