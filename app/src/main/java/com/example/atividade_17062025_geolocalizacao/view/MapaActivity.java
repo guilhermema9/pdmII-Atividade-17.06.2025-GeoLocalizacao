@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -116,6 +117,11 @@ public class MapaActivity extends AppCompatActivity implements OnMapReadyCallbac
 
                         if (!nome.isEmpty()) {
                             mapaViewModel.adicionarLocal(nome, descricao, latLng.latitude, latLng.longitude);
+
+                            Log.i("MapaActivity", "Novo local criado -> Nome: " + nome +
+                                    ", Descrição: " + descricao +
+                                    ", Lat: " + latLng.latitude +
+                                    ", Lng: " + latLng.longitude);
 
                             mGoogleMap.addMarker(new MarkerOptions()
                                     .position(latLng)

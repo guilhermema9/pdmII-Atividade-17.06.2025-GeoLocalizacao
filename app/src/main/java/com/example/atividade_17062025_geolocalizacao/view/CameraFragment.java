@@ -18,6 +18,7 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import android.os.Environment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -90,9 +91,10 @@ public class CameraFragment extends Fragment {
                 if (local != null) {
                     Uri savedUri = outputFileResults.getSavedUri();
                     if (savedUri != null) {
+                        String caminhoFoto = arquivo.getAbsolutePath();
                         local.addPhotoPath(arquivo.getAbsolutePath());
-                        String msg = "Foto salva e associada ao local: " + local.getNome();
-                        Toast.makeText(getContext(), msg, Toast.LENGTH_LONG).show();
+                        Log.i("CameraFragment", "Foto salva e associada -> Local: " + local.getNome() +
+                                ", Caminho da Foto: " + caminhoFoto);
                     }
                 } else {
                     Toast.makeText(getContext(), "Erro: Não foi possível encontrar o local para associar a foto.", Toast.LENGTH_LONG).show();
