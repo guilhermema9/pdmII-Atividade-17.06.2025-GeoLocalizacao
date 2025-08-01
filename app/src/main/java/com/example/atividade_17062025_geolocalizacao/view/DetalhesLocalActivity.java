@@ -9,6 +9,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -18,6 +19,7 @@ import com.example.atividade_17062025_geolocalizacao.adapter.FotoAdapter;
 import com.example.atividade_17062025_geolocalizacao.model.Local;
 import com.example.atividade_17062025_geolocalizacao.repository.LocalRepository;
 import com.example.atividade_17062025_geolocalizacao.viewmodel.DetalhesLocalViewModel;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 public class DetalhesLocalActivity extends AppCompatActivity {
 
@@ -25,6 +27,8 @@ public class DetalhesLocalActivity extends AppCompatActivity {
     private TextView textDescricaoLocal;
     private RecyclerView recyclerFotos;
     private DetalhesLocalViewModel detalhesLocalViewModel;
+    private FloatingActionButton fabAdicionarFoto;
+    private Local localAtual;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,13 +46,11 @@ public class DetalhesLocalActivity extends AppCompatActivity {
         textNomeLocal = findViewById(R.id.textNomeLocal);
         textDescricaoLocal = findViewById(R.id.textDescricaoLocal);
         recyclerFotos = findViewById(R.id.recyclerFotos);
-
-        double lat = getIntent().getDoubleExtra("local_lat", 0);
-        double lon = getIntent().getDoubleExtra("local_lon", 0);
-        detalhesLocalViewModel.carregarLocal(lat, lon);
+        fabAdicionarFoto = findViewById(R.id.fabAdicionarFoto);
 
         detalhesLocalViewModel.getLocal().observe(this, local -> {
             if (local != null) {
+                this.localAtual = local;
                 textNomeLocal.setText(local.getNome());
                 textDescricaoLocal.setText(local.getDescricao());
 
@@ -60,5 +62,35 @@ public class DetalhesLocalActivity extends AppCompatActivity {
                 finish();
             }
         });
+
+        fabAdicionarFoto.setOnClickListener(v -> {
+            if (localAtual != null) {
+                abrirCamera();
+            } else {
+                Toast.makeText(this, "Aguarde o local ser carregado.", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void abrirCamera() {
+        Bundle bundle = new Bundle();
+        bundle.putDouble("lat", localAtual.getLatitude());
+        bundle.putDouble("lng", localAtual.getLongitude());
+
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        CameraFragment fragment = new CameraFragment();
+        fragment.setArguments(bundle);
+
+        transaction.add(android.R.id.content, fragment);
+        transaction.addToBackStack(null);
+        transaction.commit();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        double lat = getIntent().getDoubleExtra("local_lat", 0);
+        double lon = getIntent().getDoubleExtra("local_lon", 0);
+        detalhesLocalViewModel.carregarLocal(lat, lon);
     }
 }
