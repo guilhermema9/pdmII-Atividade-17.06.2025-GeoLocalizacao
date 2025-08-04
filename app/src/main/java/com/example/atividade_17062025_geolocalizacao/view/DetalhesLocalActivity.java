@@ -47,20 +47,7 @@ public class DetalhesLocalActivity extends AppCompatActivity {
         recyclerFotos = findViewById(R.id.recyclerFotos);
         fabAdicionarFoto = findViewById(R.id.fabAdicionarFoto);
 
-        detalhesLocalViewModel.getLocal().observe(this, local -> {
-            if (local != null) {
-                this.localAtual = local;
-                textNomeLocal.setText(local.getNome());
-                textDescricaoLocal.setText(local.getDescricao());
-
-                recyclerFotos.setLayoutManager(new LinearLayoutManager(this));
-                FotoAdapter fotoAdapter = new FotoAdapter(local.getPhotoPaths(), this);
-                recyclerFotos.setAdapter(fotoAdapter);
-            } else {
-                Toast.makeText(this, "Erro: Local não encontrado.", Toast.LENGTH_LONG).show();
-                finish();
-            }
-        });
+        constroiListaFotosRecyclerView();
 
         fabAdicionarFoto.setOnClickListener(v -> {
             if (localAtual != null) {
@@ -83,6 +70,23 @@ public class DetalhesLocalActivity extends AppCompatActivity {
         transaction.add(android.R.id.content, fragment);
         transaction.addToBackStack(null);
         transaction.commit();
+    }
+
+    private void constroiListaFotosRecyclerView(){
+        detalhesLocalViewModel.getLocal().observe(this, local -> {
+            if (local != null) {
+                this.localAtual = local;
+                textNomeLocal.setText(local.getNome());
+                textDescricaoLocal.setText(local.getDescricao());
+
+                recyclerFotos.setLayoutManager(new LinearLayoutManager(this));
+                FotoAdapter fotoAdapter = new FotoAdapter(local.getPhotoPaths(), this);
+                recyclerFotos.setAdapter(fotoAdapter);
+            } else {
+                Toast.makeText(this, "Erro: Local não encontrado.", Toast.LENGTH_LONG).show();
+                finish();
+            }
+        });
     }
 
     @Override

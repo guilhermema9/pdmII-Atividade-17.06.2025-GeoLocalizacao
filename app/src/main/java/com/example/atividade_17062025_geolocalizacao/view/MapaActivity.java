@@ -74,7 +74,7 @@ public class MapaActivity extends AppCompatActivity implements OnMapReadyCallbac
                 new ActivityResultContracts.RequestPermission(),
                 isGranted -> {
                     if (isGranted && mGoogleMap != null) {
-                        habilitarLocalizacao();
+                        abrirFragmentCamera();
                     } else {
                         Toast.makeText(this, "Permissão de localização negada.", Toast.LENGTH_SHORT).show();
                     }
