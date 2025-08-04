@@ -4,19 +4,6 @@ import static androidx.core.content.ContextCompat.getMainExecutor;
 
 import android.net.Uri;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.camera.core.CameraSelector;
-import androidx.camera.core.ImageCapture;
-import androidx.camera.core.ImageCaptureException;
-import androidx.camera.core.Preview;
-import androidx.camera.lifecycle.ProcessCameraProvider;
-import androidx.camera.view.LifecycleCameraController;
-import androidx.camera.view.PreviewView;
-import androidx.core.content.ContextCompat;
-import androidx.fragment.app.Fragment;
-
 import android.os.Environment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -26,11 +13,19 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.camera.core.CameraSelector;
+import androidx.camera.core.ImageCapture;
+import androidx.camera.core.ImageCaptureException;
+import androidx.camera.view.LifecycleCameraController;
+import androidx.camera.view.PreviewView;
+import androidx.fragment.app.Fragment;
+
 import com.example.atividade_17062025_geolocalizacao.R;
 import com.example.atividade_17062025_geolocalizacao.model.Local;
 import com.example.atividade_17062025_geolocalizacao.repository.LocalRepository;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.common.util.concurrent.ListenableFuture;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
@@ -39,7 +34,6 @@ import java.util.Locale;
 public class CameraFragment extends Fragment {
 
     private PreviewView previewView;
-    private ImageCapture imageCapture;
     private Button btnTirarFoto;
     private LatLng latLng;
     private ImageButton btnVoltar;
@@ -85,16 +79,16 @@ public class CameraFragment extends Fragment {
         //arquivo.mkdirs(); se precisar criar o diretório use este metodo
         ImageCapture.OutputFileOptions outputFileOptions = new ImageCapture.OutputFileOptions.Builder(arquivo).build();
         ImageCapture.OnImageSavedCallback onImageSavedCallback = new ImageCapture.OnImageSavedCallback() {
+
             @Override
             public void onImageSaved(@NonNull ImageCapture.OutputFileResults outputFileResults) {
                 Local local = LocalRepository.getInstance().getLocalByLatLng(latLng.latitude, latLng.longitude);
                 if (local != null) {
                     Uri savedUri = outputFileResults.getSavedUri();
                     if (savedUri != null) {
-                        String caminhoFoto = arquivo.getAbsolutePath();
                         local.addPhotoPath(arquivo.getAbsolutePath());
                         Log.i("CameraFragment", "Foto salva e associada -> Local: " + local.getNome() +
-                                ", Caminho da Foto: " + caminhoFoto);
+                                ", Caminho da Foto: " + arquivo.getAbsolutePath());
                     }
                 } else {
                     Toast.makeText(getContext(), "Erro: Não foi possível encontrar o local para associar a foto.", Toast.LENGTH_LONG).show();

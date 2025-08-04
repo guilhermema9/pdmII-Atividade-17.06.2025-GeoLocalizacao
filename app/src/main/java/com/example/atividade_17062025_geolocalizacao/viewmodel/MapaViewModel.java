@@ -1,6 +1,7 @@
 package com.example.atividade_17062025_geolocalizacao.viewmodel;
 
 import androidx.lifecycle.ViewModel;
+
 import com.example.atividade_17062025_geolocalizacao.model.Local;
 import com.example.atividade_17062025_geolocalizacao.repository.LocalRepository;
 

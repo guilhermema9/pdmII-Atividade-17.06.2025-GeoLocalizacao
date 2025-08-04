@@ -13,10 +13,8 @@ import android.widget.Toast;
 import androidx.activity.EdgeToEdge;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.camera.view.LifecycleCameraController;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
@@ -26,11 +24,7 @@ import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.example.atividade_17062025_geolocalizacao.R;
-import com.example.atividade_17062025_geolocalizacao.model.Local;
-import com.example.atividade_17062025_geolocalizacao.repository.LocalRepository;
 import com.example.atividade_17062025_geolocalizacao.viewmodel.MapaViewModel;
-import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -118,7 +112,7 @@ public class MapaActivity extends AppCompatActivity implements OnMapReadyCallbac
                         if (!nome.isEmpty()) {
                             mapaViewModel.adicionarLocal(nome, descricao, latLng.latitude, latLng.longitude);
 
-                            Log.i("MapaActivity", "Novo local criado -> Nome: " + nome +
+                            Log.i("MapaActivity", "Local: " + nome +
                                     ", Descrição: " + descricao +
                                     ", Lat: " + latLng.latitude +
                                     ", Lng: " + latLng.longitude);

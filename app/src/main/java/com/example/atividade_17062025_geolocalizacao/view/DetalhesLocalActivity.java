@@ -17,7 +17,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.atividade_17062025_geolocalizacao.R;
 import com.example.atividade_17062025_geolocalizacao.adapter.FotoAdapter;
 import com.example.atividade_17062025_geolocalizacao.model.Local;
-import com.example.atividade_17062025_geolocalizacao.repository.LocalRepository;
 import com.example.atividade_17062025_geolocalizacao.viewmodel.DetalhesLocalViewModel;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 

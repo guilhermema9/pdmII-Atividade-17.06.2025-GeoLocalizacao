@@ -3,8 +3,10 @@ package com.example.atividade_17062025_geolocalizacao.viewmodel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
+
 import com.example.atividade_17062025_geolocalizacao.model.Local;
 import com.example.atividade_17062025_geolocalizacao.repository.LocalRepository;
+
 import java.util.List;
 
 public class ListaLocaisViewModel extends ViewModel {

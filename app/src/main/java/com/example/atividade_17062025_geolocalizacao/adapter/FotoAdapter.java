@@ -28,7 +28,6 @@ public class FotoAdapter extends RecyclerView.Adapter<FotoAdapter.FotoViewHolder
     @NonNull
     @Override
     public FotoViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        // Infla o layout do item da foto (item_foto.xml)
         View view = LayoutInflater.from(context).inflate(R.layout.item_foto, parent, false);
         return new FotoViewHolder(view);
     }
@@ -37,7 +36,6 @@ public class FotoAdapter extends RecyclerView.Adapter<FotoAdapter.FotoViewHolder
     public void onBindViewHolder(@NonNull FotoViewHolder holder, int position) {
         String photoPath = photoPaths.get(position);
         File imgFile = new File(photoPath);
-
         if (imgFile.exists()) {
             holder.imageView.setImageURI(Uri.fromFile(imgFile));
         }
